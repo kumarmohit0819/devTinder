@@ -30,11 +30,13 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     age: {
+      required: true,
       type: Number,
       min: 18,
     },
     gender: {
       type: String,
+      required: true,
       validate(value) {
         if (!["male", "female", "others"].includes(value)) {
           throw new Error("Gender Data not correct");
@@ -42,6 +44,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     about: {
+      required: true,
       type: String,
       default: "This is default about",
       maxLength: 200,
