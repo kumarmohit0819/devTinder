@@ -33,10 +33,47 @@ router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
       status,
     });
     const data = await connectionRequest.save();
-    res.json({ message: `${req.user.firstName} has ${status} and connection request to ${toUser.firstName} ` ,  data: data });
+    res.json({
+      message: `${req.user.firstName} has ${status} and connection request to ${toUser.firstName} `,
+      data: data,
+    });
   } catch (err) {
     res.status(400).send("ERROR : " + err.message);
   }
 });
+
+router.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
+
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
+        throw new Error("Invalid status type " + status);
+      }
+
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+
+      if (!connectionRequest) {
+        throw new Error("Connection request not found");
+      }
+
+      connectionRequest.status = status;
+
+      const data = await connectionRequest.save();
+
+      res.json({ message: `Connection Request ${status}`, data: data });
+    } catch (err) {
+      res.status(400).send("ERROR : " + err.message);
+    }
+  }
+);
 
 module.exports = router;
