@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const { userAuth } = require("../middlewares/auth");
-const User = require("../models/user");
 const { valiudateEditData } = require("../utils/validations");
 
 router.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
-    res.send(user);
+    res.send({ message: "User Profile ", data: user });
   } catch (err) {
     res.status(400).send("PROFILE LOADING FAILED : " + err.message);
   }

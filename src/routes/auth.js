@@ -9,7 +9,16 @@ router.post("/signup", async (req, res) => {
   try {
     vadlidateSignupData(req);
 
-    const { firstName, lastName, emailId, password,gender } = req.body;
+    const {
+      firstName,
+      lastName,
+      emailId,
+      password,
+      gender,
+      age,
+      photoUrl,
+      skills,
+    } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = new User({
@@ -18,10 +27,13 @@ router.post("/signup", async (req, res) => {
       emailId,
       gender,
       password: passwordHash,
+      age,
+      photoUrl,
+      skills,
     });
 
     await user.save();
-    res.send("User added successfully");
+    res.send({ message: "User added successfully", data: "" });
   } catch (err) {
     res.status(400).send("USER SIGNUP FAILED : " + err.message);
   }
@@ -42,7 +54,7 @@ router.post("/login", async (req, res) => {
       const token = await user.getJWT();
 
       res.cookie("token", token);
-      res.send("Login successfull");
+      res.send({ message: "Login successfull", data: "" });
     }
   } catch (err) {
     res.status(400).send("LOGIN FAILED : " + err.message);
@@ -50,11 +62,10 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-  res
-    .cookie("token", null, {
-      expires: new Date(Date.now()),
-    })
-    .send("logout successfull");
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  });
+  res.send({ message: "logout successfull", data: "" });
 });
 
 module.exports = router;
