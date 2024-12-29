@@ -37,8 +37,15 @@ router.get("/user/connections", userAuth, async (req, res) => {
         { status: "accepted", toUserId: loggedInUser },
         { status: "accepted", fromUserId: loggedInUser },
       ],
-    }).populate("fromUserId", USER_SAFE_DATA);
-    const data = connections.map((key) => key.fromUserId);
+    })
+      .populate("fromUserId", USER_SAFE_DATA)
+      .populate("toUserId", USER_SAFE_DATA);
+    const data = connections.map((key) => {
+      if (key.fromUserId._id.equals(loggedInUser._id)) {
+        return key.toUserId;
+      }
+      return key.fromUserId;
+    });
     res.json({ message: "Connections ", data: data });
   } catch (err) {
     res.status(400).send("ERROR : " + err.message);
