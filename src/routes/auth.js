@@ -52,9 +52,17 @@ router.post("/login", async (req, res) => {
       throw new Error("Invalid Credentials!");
     } else {
       const token = await user.getJWT();
-
+      const userSafeData = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        photoUrl: user.photoUrl,
+        about: user.abo4,
+        skills: user.skills,
+        gender: user.gender,
+        age: user.age,
+      };
       res.cookie("token", token);
-      res.send({ message: "Login successfull", data: "" });
+      res.send({ message: "Login successfull", data: userSafeData });
     }
   } catch (err) {
     res.status(400).send("LOGIN FAILED : " + err.message);
