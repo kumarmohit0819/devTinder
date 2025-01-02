@@ -2,16 +2,18 @@ require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/datatbase");
 const app = express();
-const PORT = 3000;
+const SITE_BASE_URL = process.env.SITE_BASE_URL;
+const PORT = process.env.PORT || 3000;
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 const cors = require("cors");
+
 app.use(
   cors({
-    origin: process.env.SITE_BASE_URL,
+    origin: `${SITE_BASE_URL} : ${PORT}`,
     credentials: true,
   })
 );
