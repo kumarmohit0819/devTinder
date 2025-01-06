@@ -3,21 +3,19 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const { vadlidateSignupData } = require("../utils/validations");
 const User = require("../models/user");
+const upload = require("../middlewares/fileUpload");
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", upload.array("profilePhotos", 5), async (req, res) => {
   try {
     vadlidateSignupData(req);
 
-    const {
-      firstName,
-      lastName,
-      emailId,
-      password,
-      gender,
-      age,
-      photoUrl,
-      skills,
-    } = req.body;
+    const { firstName, lastName, emailId, password, gender, age, skills } =
+      req.body;
+    const profilePhotos = [];
+    req.files?.forEach((photo) => {
+      profilePhotos.push(photo.path);
+    });
+
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = new User({
@@ -27,7 +25,7 @@ router.post("/signup", async (req, res) => {
       gender,
       password: passwordHash,
       age,
-      photoUrl,
+      profilePhotos: profilePhotos,
       skills,
     });
 
@@ -42,7 +40,6 @@ router.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
     const user = await User.findOne({ emailId: emailId });
-
     if (!user) {
       throw new Error("Invalid Credentials!");
     }
@@ -54,11 +51,11 @@ router.post("/login", async (req, res) => {
       const userSafeData = {
         firstName: user.firstName,
         lastName: user.lastName,
-        photoUrl: user.photoUrl,
-        about: user.abo4,
-        skills: user.skills,
+        about: user.about,
         gender: user.gender,
         age: user.age,
+        skills: user.skills,
+        profilePhotos: user.profilePhotos,
       };
       res.cookie("token", token);
       res.send({ message: "Login successfull", data: userSafeData });

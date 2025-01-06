@@ -6,7 +6,16 @@ const { valiudateEditData } = require("../utils/validations");
 router.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
-    res.send({ message: "User Profile ", data: user });
+    const userSafeData = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      about: user.about,
+      gender: user.gender,
+      age: user.age,
+      skills: user.skills,
+      profilePhotos: user.profilePhotos,
+    };
+    res.send({ message: "User Profile ", data: userSafeData });
   } catch (err) {
     res.status(400).send("PROFILE LOADING FAILED : " + err.message);
   }
